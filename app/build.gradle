@@ -1,28 +1,49 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.model.application'
 
-android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+model {
+    android {
+        compileSdkVersion = 22
+        buildToolsVersion ="22.0.1"
 
-    defaultConfig {
-        applicationId "com.cc.test"
-        minSdkVersion 15
-        targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
-
-        ndk {
-            moduleName "test"
-            ldLibs "log"
-            abiFilters "armeabi", "armeabi-v7a", "x86"
-            cFlags "-fvisibility=hidden"
+        defaultConfig.with {
+            applicationId = "com.cc.test"
+            minSdkVersion.apiLevel      = 15
+            targetSdkVersion.apiLevel   = 22
         }
     }
-    buildTypes {
+    /*
+     * native build settings
+     */
+    android.ndk {
+        moduleName = "test"
+        ldLibs    = ["android", "log"]
+        /*
+         * Other ndk flags configurable here are
+         * cppFlags += "-fno-rtti"
+         * cppFlags += "-fno-exceptions"
+         * ldLibs    = ["android", "log"]
+         * stl       = "system"
+         */
+    }
+    android.buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled = false
+            proguardFiles  += file('proguard-rules.txt')
         }
+    }
+    android.productFlavors {
+        // for detailed abiFilter descriptions, refer to "Supported ABIs" @
+        // https://developer.android.com/ndk/guides/abis.html#sa
+        create("arm") {
+            ndk.abiFilters += "armeabi"
+        }
+        create("arm7") {
+            ndk.abiFilters += "armeabi-v7a"
+        }
+        create("x86") {
+            ndk.abiFilters += "x86"
+        }
+
     }
 }
 
